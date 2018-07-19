@@ -4,7 +4,7 @@
  */
 
 // set up data structures
-window.streams = {};
+window.streams = {};  // Window is a browser object
 streams.home = [];
 streams.users = {};
 streams.users.shawndrost = [];
@@ -44,6 +44,7 @@ var generateRandomTweet = function(){
   tweet.message = randomMessage();
   tweet.created_at = new Date();
   addTweet(tweet);
+  //console.log(tweet.created_at);  // Newly added; can only test by Chrome (not here)
 };
 
 for(var i = 0; i < 10; i++){
@@ -54,7 +55,7 @@ var scheduleNextTweet = function(){
   generateRandomTweet();
   setTimeout(scheduleNextTweet, Math.random() * 1500);
 };
-scheduleNextTweet();
+//scheduleNextTweet();  // Newly modified; to stop generating new tweets
 
 // utility function for letting students add "write a tweet" functionality
 // (note: not used by the rest of this file.)

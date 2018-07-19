@@ -3,25 +3,123 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <style>
+      .leftSection {
+        left: 0;
+        background-color: #ADDFFF;
+      }
+      .rightSection {
+        right: 0;
+        background-color: #FFFFE0;
+      }
+    </style>
+    <style>
+      .usernames {color: blue;}
+      .popup {
+        background: white;
+        display:none;
+        width: 50%;  
+        height: 90%;
+        margin-left: 200px;
+        margin-top: -50px;
+      }
+      .closePopup {
+        color: blue;
+      }
+      button {background-color: yellow;}
+    </style>
   </head>
+  
   <body>
-    <script>
+    <h1> Welcome to Twittler! </h1>
+      <div class = "leftSection">
+        <h3>Section 1: Click on Username, to View the User's Timeline</h2>
+        <!-- A list, or dropdown box, of all 4 usernames (for now) -->
+        <div class = "usernames">
+          <div id="shawndrost">shawndrost</div>
+          <div id="sharksforcheap">sharksforcheap</div>
+          <div id="mracus">mracus</div>
+          <div id="douglascalhoun">douglascalhoun</div>
+        </div>
 
+        <div class = "popup"> Selected User's Timeline
+          <div class="closePopup" align = "right">X (close the popup)</div>
+          <div id ="timeline"> No Info Yet </div>
+        </div>
+
+        <br>
+      </div>
+
+      <div class = "rightSection">
+        <h3>Section 2: Home with All Tweets (that you are following)</h3>
+        <button type = "button">Stop Generating New Tweets</button>
+        <br><br>
+      </div>
+
+
+    <script>  // Script for section 1 of interface (a user's timeline)
+      //$(".shawndrost").click(function(){
+      $(".usernames div").click(function(){  // Parent "div", with children "id"s
+        $("#timeline").text('');  // First, clear all previous timeline info
+
+        // Pull the user's timeline info
+        var username = $(this).attr("id");  // Specify the user by "this", with jQuery (not parameter)
+        // alert(username);  // For testing only
+        var $timeline = $("#timeline");
+        //var userTweets = streams.users['shawndrost'];
+        var userTweets = streams.users[username];  
+        for (var i = 0; i < userTweets.length; i++) {
+          var $tweet = $('<div></div>');
+          var creation_time = userTweets[i].created_at.toLocaleTimeString();
+          $tweet.text(creation_time + ': ' + userTweets[i].message + ' (@' + userTweets[i].user + ')');
+          $tweet.appendTo($timeline);
+        }
+
+        $(".popup").show();
+      });
+
+      $(".closePopup").click(function(){
+        $(".popup").hide();
+      });
+
+    </script>
+
+
+    <script>  // Script for section 2 of interface (home)
+      var $body = $('body');
+      //$body.html('');    
+
+      // Step 1: use jQuery to add 10 tweets to HTML's body
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
-
         var index = streams.home.length - 1;
         while(index >= 0){
           var tweet = streams.home[index];
           var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
+          var creation_time = tweet.created_at.toLocaleTimeString();
+          $tweet.text('@' + tweet.user + ': ' + tweet.message + ' (created at: '+ creation_time + ')');
+          $tweet.appendTo($(".rightSection"));  //$tweet.appendTo($body);
           index -= 1;
         }
+      });
 
+      // Step 2: auto generate a new tweet every second
+      var newTweet = setInterval(addTweetToBody, 1000);  // Somehow setTimeout() doesn't work here
+      function addTweetToBody() {
+        generateRandomTweet();
+        var tweetsSize = streams.home.length - 1;
+        var tweet = streams.home[tweetsSize];  // The last tweet (as of now)
+        var $tweet = $('<div></div>');
+        var creation_time = tweet.created_at.toLocaleTimeString();
+        $tweet.text('@' + tweet.user + ': ' + tweet.message + ' (created at: '+ creation_time + ')');
+        $tweet.appendTo($(".rightSection"));  //$tweet.appendTo($body);
+      };
+
+      // Step 3: use button, to stop generating new tweets
+      $("button").click(function(){
+        clearInterval(newTweet);
       });
 
     </script>
+
   </body>
 </html>
